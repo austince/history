@@ -1,0 +1,20 @@
+{
+  "name": "peripheral",
+  "version": "1.0.0",
+  "description": "Take in content. Peripherally.",
+  "main": "background.js",
+  "scripts": {
+    "build": "browserify src/extension.js -o src/bundle.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "austin ce <austince@github.com>",
+  "license": "ISC",
+  "private": false,
+  "dependencies": {
+    "jquery": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.0.58",
+    "browserify": "^15.2.0"
+  }
+}

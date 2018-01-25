@@ -1,0 +1,23 @@
+{
+	"name": "Peripheral",
+	"description": "Take in content. Peripherally.",
+	"version": "1.0",
+	"homepage_url": "http://www.austince.me",
+	"browser_action": {
+		"default_title": "Perhipheries",
+		"default_icon": "icon.png"
+	},
+	"permissions": [
+		"tabs",
+		"<all_urls>"
+	],
+	"background": {
+		"scripts": [ "background.js" ],
+		"persistent": true
+	},
+	"content_scripts": [{
+		"matches": [ "<all_urls>" ],
+		"js": [ "bundle.js" ]
+	}],
+	"manifest_version": 2
+}
