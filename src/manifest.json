@@ -1,28 +1,36 @@
 {
-	"name": "Browse History",
-	"description": "Can you escape your past?",
-	"version": "1.0",
-	"homepage_url": "http://www.austince.me",
-	"browser_action": {
-		"default_title": "Perhipheries",
-		"default_icon": "icon.png"
-	},
-	"permissions": [
-		"tabs",
-		"storage",
-		"<all_urls>"
-	],
-	"background": {
-		"scripts": [ "background.js" ],
-		"persistent": true
-	},
-	"content_scripts": [{
-		"matches": [
-//			"<all_urls>"
-			"https://github.com/austince/history-extension"
-		],
-		"js": [ "build/bundle.js" ],
-		"css": ["history.css"]
-	}],
-	"manifest_version": 2
+  "name": "Browse History",
+  "description": "Can you escape your past?",
+  "version": "1.0",
+  "homepage_url": "http://www.austince.me",
+  "browser_action": {
+    "default_title": "History",
+    "default_icon": "icon.png"
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "build/background.bundle.js"
+    ],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+//        "<all_urls>"
+        "https://github.com/*"
+      ],
+      "js": [
+        "build/content.bundle.js"
+      ],
+      "css": [
+        "history.css"
+      ]
+    }
+  ],
+  "manifest_version": 2
 }

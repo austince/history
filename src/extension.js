@@ -1,6 +1,8 @@
 require('p5/lib/addons/p5.dom');
 const p5 = require('p5');
-const chromep = require('chrome-promise');
+const chromep = new (require('chrome-promise'))();
+
+
 
 const historyItemClassName = '--history-item';
 const historyContainerId = '--history-container';
@@ -8,6 +10,23 @@ const angleStep = 0.01;
 const radius = 2;
 const moveStep = 0.0001;
 const fadeStep = -0.0001;
+
+let historyItems = [];
+
+const port = chrome.runtime.connect({ name: 'history' });
+port.onMessage.addListener(function (message) {
+  if (message.action === 'init') {
+    historyItems = message.history;
+
+    for (let item of historyItems) {
+
+    }
+
+    port.postMessage({ action: 'OK' });
+  } else if (message.action === 'sendHistory') {
+    port.postMessage({ action: 'historySent', history: historyItems  })
+  }
+});
 
 /*
  * interface HistoryItem {
@@ -33,7 +52,11 @@ const sketch = (p) => {
     // Filter out all history-items and sort by smallest area
     const elems = document.elementsFromPoint(mousePageX, mousePageY)
       .filter(node => {
-        return (typeof node.className === 'undefined' || node.className.indexOf(historyItemClassName) === -1)
+        const notHistoryItem = typeof node.className === 'undefined' ?
+          true :
+          node.className.indexOf(historyItemClassName) === -1;
+
+        return notHistoryItem
           // && node.clientWidth < window.innerWidth / 2
           && node.clientHeight < window.innerHeight / 2
       })
@@ -55,7 +78,7 @@ const sketch = (p) => {
 
       console.log(mousePageX, mousePageY);
 
-      history.push({
+      historyItems.push({
         elem,
         timeSaved: new Date(),
         moveSpeed: 1,
@@ -85,43 +108,36 @@ const sketch = (p) => {
   };
 
   p.draw = () => {
-    // A hacky way to ensure no race conditions
-    // #noLoop at top
-    // #loop in callback
-    p.noLoop();
-    chrome.storage.sync.get('history', (history) => {
-      // console.log('draw' + p.frameCount);
-      for (const [index, item] of history.entries()) {
-        // console.log(index);
-        // Update opacity
-        item.elem.style('opacity', item.opacity);
+    // console.log('draw' + p.frameCount);
+    for (const [index, item] of historyItems.entries()) {
+      // console.log(index);
+      // Update opacity
+      item.elem.style('opacity', item.opacity);
 
-        // Update position
-        const { x, y } = item.elem.position();
+      // Update position
+      const { x, y } = item.elem.position();
 
-        const itemPosVec = new p5.Vector(x, y);
-        const mouseVec = new p5.Vector(mousePageX, mousePageY);
-        const distVec = new p5.Vector(mouseVec.x - x, mouseVec.y - y);
+      const itemPosVec = new p5.Vector(x, y);
+      const mouseVec = new p5.Vector(mousePageX, mousePageY);
+      const distVec = new p5.Vector(mouseVec.x - x, mouseVec.y - y);
 
-        const moveVec = distVec.copy()
-          .normalize()
-          .mult(item.moveSpeed)
-          .add(p.cos(item.angle) * radius, p.sin(item.angle) * radius);
-        itemPosVec.add(moveVec);
+      const moveVec = distVec.copy()
+        .normalize()
+        .mult(item.moveSpeed)
+        .add(p.cos(item.angle) * radius, p.sin(item.angle) * radius);
+      itemPosVec.add(moveVec);
 
-        // Update values
-        item.elem.position(itemPosVec.x, itemPosVec.y);
-        item.angle += p.random(0, angleStep);
-        // item.moveSpeed = p.constrain(moveStep + moveStep, 0.1, 100);
-        item.opacity += p.random(0, fadeStep);
+      // Update values
+      item.elem.position(itemPosVec.x, itemPosVec.y);
+      item.angle += p.random(0, angleStep);
+      // item.moveSpeed = p.constrain(moveStep + moveStep, 0.1, 100);
+      item.opacity += p.random(0, fadeStep);
 
-        // remove the forgotten
-        if (item.opacity < 0) {
-          history.splice(index, 1);
-        }
+      // remove the forgotten
+      if (item.opacity < 0) {
+        historyItems.splice(index, 1);
       }
-    });
-
+    }
   };
 
   /**
