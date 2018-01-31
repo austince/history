@@ -1,7 +1,7 @@
 require('p5/lib/addons/p5.dom');
 const p5 = require('p5');
+const { cloneDeep } = require('lodash');
 const chromep = new (require('chrome-promise'))();
-
 
 
 const historyItemClassName = '--history-item';
@@ -13,20 +13,7 @@ const fadeStep = -0.0001;
 
 let historyItems = [];
 
-const port = chrome.runtime.connect({ name: 'history' });
-port.onMessage.addListener(function (message) {
-  if (message.action === 'init') {
-    historyItems = message.history;
-
-    for (let item of historyItems) {
-
-    }
-
-    port.postMessage({ action: 'OK' });
-  } else if (message.action === 'sendHistory') {
-    port.postMessage({ action: 'historySent', history: historyItems  })
-  }
-});
+let port;
 
 /*
  * interface HistoryItem {
@@ -39,6 +26,9 @@ port.onMessage.addListener(function (message) {
 const sketch = (p) => {
   let mousePageX,
     mousePageY;
+  let mouseClientX,
+    mouseClientY;
+  let historyLoopId = null;
   let historyContainer;
 
   /*
@@ -48,9 +38,13 @@ const sketch = (p) => {
     if (!mousePageX || !mousePageY) {
       return null;
     }
+    // Must use client x y to get nearest elements
+    // console.log('Closest nodes:');
+    // console.log(mousePageX, mousePageY, document.elementsFromPoint(mousePageX, mousePageY));
+    // console.log(mouseClientX, mouseClientY, document.elementsFromPoint(mouseClientX, mouseClientY));
 
     // Filter out all history-items and sort by smallest area
-    const elems = document.elementsFromPoint(mousePageX, mousePageY)
+    const elems = document.elementsFromPoint(mouseClientX, mouseClientY)
       .filter(node => {
         const notHistoryItem = typeof node.className === 'undefined' ?
           true :
@@ -91,9 +85,14 @@ const sketch = (p) => {
   function addToHistoryLoop() {
     console.log('History is in the making.');
     addClosestToHistory();
-    setTimeout(addToHistoryLoop, p.random(5000, 10000));
+    historyLoopId = setTimeout(addToHistoryLoop, p.random(5000, 10000));
   }
 
+  function stopHistoryLoop() {
+    if (historyLoopId) {
+      clearTimeout(historyLoopId);
+    }
+  }
 
   /* p5 lifecycle functions */
 
@@ -104,7 +103,44 @@ const sketch = (p) => {
       .id(historyContainerId)
       .parent(document.body);
 
-    addToHistoryLoop();
+    // Connect to the port
+    port = chrome.runtime.connect({ name: 'history' });
+    // Listen for messages
+    port.onMessage.addListener(function (message) {
+      if (message.action === 'init') {
+        // Deconstruct from storage and attach to the container
+        historyItems = message.history;
+        historyItems.forEach(item => {
+          item.elem = new p5.Element(item.html);
+          item.elem.parent(historyContainer);
+          const {x, y} = item.position;
+          item.elem.position(x, y);
+          delete item.position;
+          delete item.html;
+        });
+        // Start loops
+        addToHistoryLoop();
+        p.loop();
+        port.postMessage({ action: 'OK' });
+        console.log('Initialized');
+      } else if (message.action === 'pause') {
+        console.log('Paused');
+        stopHistoryLoop();
+        p.noLoop(); // Stop the draw loop
+      } else if (message.action === 'sendHistory') {
+        // Format the historyItems for storage
+        const historyFmt = historyItems.map(item => {
+          const itemFmt = cloneDeep(item);
+          itemFmt.html = item.elem.elt.outerHTML;
+          itemFmt.position = itemFmt.elem.position();
+          delete itemFmt.elem;
+          return itemFmt;
+        });
+
+        console.log('Sending history.');
+        port.postMessage({ action: 'historySent', history: historyFmt })
+      }
+    });
   };
 
   p.draw = () => {
@@ -142,11 +178,13 @@ const sketch = (p) => {
 
   /**
    * Record actual page mouse coords
-   * @param event
+   * @param {Event} event
    */
   p.mouseMoved = (event) => {
     mousePageX = event.pageX;
     mousePageY = event.pageY;
+    mouseClientX = event.clientX;
+    mouseClientY = event.clientY;
   };
 
   p.mousePressed = () => {
