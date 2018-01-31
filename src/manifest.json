@@ -1,6 +1,6 @@
 {
-	"name": "Peripheral",
-	"description": "Take in content. Peripherally.",
+	"name": "Browse History",
+	"description": "Can you escape your past?",
 	"version": "1.0",
 	"homepage_url": "http://www.austince.me",
 	"browser_action": {
@@ -9,6 +9,7 @@
 	},
 	"permissions": [
 		"tabs",
+		"storage",
 		"<all_urls>"
 	],
 	"background": {
@@ -16,8 +17,12 @@
 		"persistent": true
 	},
 	"content_scripts": [{
-		"matches": [ "<all_urls>" ],
-		"js": [ "bundle.js" ]
+		"matches": [
+//			"<all_urls>"
+			"https://github.com/austince/history-extension"
+		],
+		"js": [ "build/bundle.js" ],
+		"css": ["history.css"]
 	}],
 	"manifest_version": 2
 }

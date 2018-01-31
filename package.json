@@ -4,17 +4,33 @@
   "description": "Take in content. Peripherally.",
   "main": "background.js",
   "scripts": {
-    "build": "browserify src/extension.js -o src/bundle.js",
+    "build": "browserify src/extension.js -o src/build/bundle.js",
+    "build:dev": "npm run build -- --debug",
+    "dev": "npm-watch build:dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "austin ce <austince@github.com>",
   "license": "ISC",
   "private": false,
   "dependencies": {
-    "jquery": "^3.3.1"
+    "chrome-promise": "^2.1.2",
+    "jquery": "^3.3.1",
+    "p5": "^0.6.0"
   },
   "devDependencies": {
     "@types/chrome": "0.0.58",
-    "browserify": "^15.2.0"
+    "browserify": "^15.2.0",
+    "npm-watch": "^0.3.0"
+  },
+  "watch": {
+    "build:dev": {
+      "patterns": [
+        "src/*.js"
+      ],
+      "ignore": [
+        "src/bundle.js"
+      ],
+      "delay": 500
+    }
   }
 }

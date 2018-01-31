@@ -2,3 +2,4 @@ node_modules
 bundle.js
 .vscode
 .idea
+*.tmp-browserify-*
