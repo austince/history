@@ -2,3 +2,7 @@
     overflow: hidden;
     max-width: 100%;
 }
+
+.--history-item {
+    z-index: 100000; /* beat that */
+}
