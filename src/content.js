@@ -6,7 +6,7 @@ console.log('Content script injected.');
 const historyItemClassName = '--history-item';
 const historyContainerId = '--history-container';
 const angleStep = 0.01;
-const radius = 2;
+const radius = 100;
 const moveStep = 0.0001;
 const fadeStep = -0.0001;
 

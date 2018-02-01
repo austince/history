@@ -1,8 +1,7 @@
 {
-  "name": "peripheral",
+  "name": "browse-history",
   "version": "1.0.0",
-  "description": "Take in content. Peripherally.",
-  "main": "background.js",
+  "description": "Remember what you browse.",
   "scripts": {
     "build:background": "browserify src/background.js -o src/build/background.bundle.js --debug",
     "build:content": "browserify src/content.js -o src/build/content.bundle.js --debug",
