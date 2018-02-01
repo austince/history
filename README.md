@@ -1,7 +1,7 @@
 
 Browse History
 ====
-![](./screenshots/screenshot-3.png)
+![](./screenshots/screenshot-4.png)
 [Screen Recording](https://vimeo.com/253825121)
 
 Sometimes you'd like to escape your browsing history, but like memories, they
