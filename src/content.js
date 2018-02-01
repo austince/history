@@ -221,8 +221,8 @@ const sketch = (p) => {
       const distVec = new p5.Vector(mouseVec.x - x, mouseVec.y - y);
 
       const moveVec = distVec.copy()
-        .normalize()
         .add(p.cos(item.angle) * radius, p.sin(item.angle) * radius)
+        .normalize()
         .mult(item.moveSpeed);
       itemPosVec.add(moveVec);
 

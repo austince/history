@@ -13,6 +13,7 @@ circulate in your pages subconscious.
 - Open a few tabs, click between them
 
 ## What doesn't work
+- History doesn't follow you through links yet! Only through tabs.
 - Having multiple windows open at the same time. Only one please!
 
 ## Goal
