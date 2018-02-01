@@ -21,8 +21,8 @@
   "content_scripts": [
     {
       "matches": [
-//        "<all_urls>"
-        "https://github.com/*"
+        "<all_urls>"
+//        "https://github.com/*" // For dev purposes
       ],
       "js": [
         "build/content.bundle.js"

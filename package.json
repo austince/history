@@ -5,7 +5,7 @@
   "main": "background.js",
   "scripts": {
     "build:background": "browserify src/background.js -o src/build/background.bundle.js --debug",
-    "build:content": "browserify src/extension.js -o src/build/content.bundle.js --debug",
+    "build:content": "browserify src/content.js -o src/build/content.bundle.js --debug",
     "build": "npm run build:background && npm run build:content",
     "dev": "npm-watch build",
     "test": "echo \"Error: no test specified\" && exit 1"

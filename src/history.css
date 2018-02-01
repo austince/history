@@ -1,7 +1,4 @@
-/*.--history-item {*/
-    /*position: absolute;*/
-/*}*/
-
 .--history-container {
     overflow: hidden;
+    max-width: 100%;
 }
