@@ -1,8 +1,6 @@
 
-Browse History
-====
-![](./screenshots/screenshot-4.png)
-[Screen Recording](https://vimeo.com/253825121)
+[![](./screenshots/screenshot-4.png)](https://vimeo.com/253825121)
+[Screen Recording on Vimeo](https://vimeo.com/253825121)
 
 Sometimes you'd like to escape your browsing history, but like memories, they
 follow you to unexpected places. As they try to fit themselves to new situations,
